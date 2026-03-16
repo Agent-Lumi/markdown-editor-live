@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown Editor Live - Real-time Preview</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #1a1a2e;
+            min-height: 100vh;
+            color: #fff;
+        }
+        header {
+            background: #16213e;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #0f3460;
+        }
+        header h1 { font-size: 1.8em; margin-bottom: 5px; }
+        header p { opacity: 0.7; font-size: 0.9em; }
+        .toolbar {
+            background: #16213e;
+            padding: 10px 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #0f3460;
+        }
+        .toolbar button {
+            background: #0f3460;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background 0.2s;
+        }
+        .toolbar button:hover { background: #e94560; }
+        .editor-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            height: calc(100vh - 140px);
+        }
+        .pane {
+            overflow: auto;
+            padding: 20px;
+        }
+        .input-pane {
+            background: #0f0f1a;
+            border-right: 1px solid #0f3460;
+        }
+        .preview-pane {
+            background: #fff;
+            color: #333;
+        }
+        textarea {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            color: #fff;
+            border: none;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: none;
+            outline: none;
+        }
+        .preview-pane h1, .preview-pane h2, .preview-pane h3 {
+            margin: 20px 0 10px;
+            color: #1a1a2e;
+        }
+        .preview-pane p { margin: 10px 0; line-height: 1.6; }
+        .preview-pane code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .preview-pane pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+        .preview-pane pre code {
+            background: transparent;
+            padding: 0;
+        }
+        .preview-pane blockquote {
+            border-left: 4px solid #e94560;
+            padding-left: 16px;
+            margin: 16px 0;
+            color: #666;
+        }
+        .preview-pane ul, .preview-pane ol {
+            margin: 16px 0;
+            padding-left: 24px;
+        }
+        .preview-pane li { margin: 8px 0; }
+        .preview-pane a { color: #e94560; }
+        .preview-pane table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+        }
+        .preview-pane th, .preview-pane td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .preview-pane th { background: #f4f4f4; }
+        footer {
+            background: #16213e;
+            padding: 15px;
+            text-align: center;
+            font-size: 0.85em;
+            opacity: 0.7;
+        }
+        footer a { color: #e94560; }
+        @media (max-width: 768px) {
+            .editor-container { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
+            .input-pane { border-right: none; border-bottom: 1px solid #0f3460; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>📝 Markdown Editor Live</h1>
+        <p>Type on the left, see preview on the right</p>
+    </header>
+    
+    <div class="toolbar">
+        <button onclick="insertText('# Heading\\n')">H1</button>
+        <button onclick="insertText('## Heading\\n')">H2</button>
+        <button onclick="insertText('**bold**')">Bold</button>
+        <button onclick="insertText('*italic*')">Italic</button>
+        <button onclick="insertText('[link](url)')">Link</button>
+        <button onclick="insertText('```\\ncode\\n```')">Code</button>
+        <button onclick="insertText('- item')">List</button>
+        <button onclick="clearEditor()">Clear</button>
+        <button onclick="loadExample()">Example</button>
+    </div>
+    
+    <div class="editor-container">
+        <div class="pane input-pane">
+            <textarea id="editor" placeholder="# Start typing markdown here..."
+
+## Features
+- **Live preview** as you type
+- **GitHub flavored** markdown
+- **Syntax highlighting** for code
+- **Tables, lists, links**
+
+```javascript
+// Code blocks work too!
+function hello() {
+    console.log('Hello World!');
+}
+```"></textarea>
+        </div>
+        <div class="pane preview-pane" id="preview"></div>
+    </div>
+    
+    <footer>
+        Made with 💡 by <a href="https://github.com/Agent-Lumi">Lumi</a> for @shalkith
+    </footer>
+    
+    <script>
+        const editor = document.getElementById('editor');
+        const preview = document.getElementById('preview');
+        
+        function updatePreview() {
+            const markdown = editor.value;
+            preview.innerHTML = marked.parse(markdown);
+        }
+        
+        function insertText(text) {
+            const start = editor.selectionStart;
+            const end = editor.selectionEnd;
+            const value = editor.value;
+            editor.value = value.substring(0, start) + text + value.substring(end);
+            editor.focus();
+            editor.selectionStart = editor.selectionEnd = start + text.length;
+            updatePreview();
+        }
+        
+        function clearEditor() {
+            if (confirm('Clear all content?')) {
+                editor.value = '';
+                updatePreview();
+            }
+        }
+        
+        function loadExample() {
+            editor.value = `# Welcome to Markdown Editor Live
+
+This is a **live markdown editor** with real-time preview.
+
+## Features
+
+- ✅ Live preview as you type
+- ✅ GitHub flavored markdown
+- ✅ Syntax highlighting
+- ✅ Tables and lists
+
+## Code Example
+
+\`\`\`javascript
+function greet(name) {
+    return \`Hello, \${name}!\`;
+}
+
+console.log(greet('World'));
+\`\`\`
+
+## Table Example
+
+| Feature | Status |
+|---------|--------|
+| Live Preview | ✅ |
+| Syntax Highlight | ✅ |
+| Mobile Friendly | ✅ |
+
+## Links
+
+Visit [GitHub](https://github.com) for more.
+
+---
+
+*Happy writing!* 📝`;
+            updatePreview();
+        }
+        
+        editor.addEventListener('input', updatePreview);
+        
+        // Initial render
+        updatePreview();
+    </script>
+</body>
+</html>
