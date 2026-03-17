@@ -6,6 +6,7 @@
     <title>Markdown Editor Live - Real-time Preview</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -29,6 +30,7 @@
             gap: 10px;
             flex-wrap: wrap;
             border-bottom: 1px solid #0f3460;
+            align-items: center;
         }
         .toolbar button {
             background: #0f3460;
@@ -41,6 +43,24 @@
             transition: background 0.2s;
         }
         .toolbar button:hover { background: #e94560; }
+        .toolbar button.pdf-btn { background: #e94560; }
+        .toolbar button.pdf-btn:hover { background: #ff6b6b; }
+        .toolbar .separator {
+            width: 1px;
+            height: 24px;
+            background: #0f3460;
+            margin: 0 5px;
+        }
+        .toolbar label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.85em;
+            cursor: pointer;
+        }
+        .toolbar input[type="checkbox"] {
+            cursor: pointer;
+        }
         .editor-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -126,6 +146,86 @@
         @media (max-width: 768px) {
             .editor-container { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
             .input-pane { border-right: none; border-bottom: 1px solid #0f3460; }
+            .toolbar { justify-content: center; }
+        }
+        /* PDF-specific styles */
+        .pdf-content {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        .pdf-content h1, .pdf-content h2, .pdf-content h3 {
+            color: #1a1a2e;
+            margin: 20px 0 10px;
+        }
+        .pdf-content h1 { font-size: 2em; border-bottom: 2px solid #e94560; padding-bottom: 10px; }
+        .pdf-content h2 { font-size: 1.5em; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+        .pdf-content h3 { font-size: 1.25em; }
+        .pdf-content p { margin: 10px 0; }
+        .pdf-content code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9em;
+        }
+        .pdf-content pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 16px 0;
+        }
+        .pdf-content pre code {
+            background: transparent;
+            padding: 0;
+            color: #f8f8f2;
+        }
+        /* Syntax highlighting for PDF */
+        .pdf-content .keyword { color: #ff79c6; }
+        .pdf-content .string { color: #f1fa8c; }
+        .pdf-content .function { color: #50fa7b; }
+        .pdf-content .comment { color: #6272a4; }
+        .pdf-content .number { color: #bd93f9; }
+        .pdf-content blockquote {
+            border-left: 4px solid #e94560;
+            padding-left: 16px;
+            margin: 16px 0;
+            color: #666;
+            font-style: italic;
+        }
+        .pdf-content ul, .pdf-content ol {
+            margin: 16px 0;
+            padding-left: 24px;
+        }
+        .pdf-content li { margin: 8px 0; }
+        .pdf-content a { color: #e94560; text-decoration: none; }
+        .pdf-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+        }
+        .pdf-content th, .pdf-content td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .pdf-content th { background: #f4f4f4; font-weight: 600; }
+        .pdf-content tr:nth-child(even) { background: #fafafa; }
+        .pdf-metadata {
+            border-bottom: 2px solid #e94560;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .pdf-metadata h2 {
+            margin: 0 0 10px 0;
+            font-size: 1.5em;
+        }
+        .pdf-metadata p {
+            margin: 5px 0;
+            color: #666;
+            font-size: 0.9em;
         }
     </style>
 </head>
@@ -136,15 +236,21 @@
     </header>
     
     <div class="toolbar">
-        <button onclick="insertText('# Heading\\n')">H1</button>
-        <button onclick="insertText('## Heading\\n')">H2</button>
+        <button onclick="insertText('# Heading\n')">H1</button>
+        <button onclick="insertText('## Heading\n')">H2</button>
         <button onclick="insertText('**bold**')">Bold</button>
         <button onclick="insertText('*italic*')">Italic</button>
         <button onclick="insertText('[link](url)')">Link</button>
-        <button onclick="insertText('```\\ncode\\n```')">Code</button>
+        <button onclick="insertText('```\ncode\n```')">Code</button>
         <button onclick="insertText('- item')">List</button>
         <button onclick="clearEditor()">Clear</button>
         <button onclick="loadExample()">Example</button>
+        <div class="separator"></div>
+        <label>
+            <input type="checkbox" id="includeMetadata" checked>
+            Include Metadata
+        </label>
+        <button class="pdf-btn" onclick="exportToPDF()">📄 Export to PDF</button>
     </div>
     
     <div class="editor-container">
@@ -208,6 +314,7 @@ This is a **live markdown editor** with real-time preview.
 - ✅ GitHub flavored markdown
 - ✅ Syntax highlighting
 - ✅ Tables and lists
+- ✅ **Export to PDF** 🎉
 
 ## Code Example
 
@@ -226,6 +333,7 @@ console.log(greet('World'));
 | Live Preview | ✅ |
 | Syntax Highlight | ✅ |
 | Mobile Friendly | ✅ |
+| PDF Export | ✅ |
 
 ## Links
 
@@ -235,6 +343,109 @@ Visit [GitHub](https://github.com) for more.
 
 *Happy writing!* 📝`;
             updatePreview();
+        }
+        
+        // Simple syntax highlighting for code blocks
+        function highlightCode(code, language) {
+            // Basic syntax highlighting patterns
+            let highlighted = code
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+            
+            // Keywords
+            highlighted = highlighted.replace(/\b(function|return|if|else|for|while|const|let|var|class|import|export|async|await|try|catch|new|this)\b/g, '<span class="keyword">$1</span>');
+            
+            // Strings
+            highlighted = highlighted.replace(/(['"\`])(.*?)(\1)/g, '<span class="string">$1$2$3</span>');
+            
+            // Functions
+            highlighted = highlighted.replace(/\b([a-zA-Z_]\w*)(?=\()/g, '<span class="function">$1</span>');
+            
+            // Comments
+            highlighted = highlighted.replace(/(\/\/.*$)/gm, '<span class="comment">$1</span>');
+            highlighted = highlighted.replace(/(\/\*[\s\S]*?\*\/)/g, '<span class="comment">$1</span>');
+            
+            // Numbers
+            highlighted = highlighted.replace(/\b(\d+)\b/g, '<span class="number">$1</span>');
+            
+            return highlighted;
+        }
+        
+        function exportToPDF() {
+            const includeMetadata = document.getElementById('includeMetadata').checked;
+            const markdownContent = editor.value;
+            
+            if (!markdownContent.trim()) {
+                alert('Please enter some markdown content first!');
+                return;
+            }
+            
+            // Create a temporary container for PDF content
+            const pdfContainer = document.createElement('div');
+            pdfContainer.className = 'pdf-content';
+            pdfContainer.style.padding = '40px';
+            pdfContainer.style.maxWidth = '800px';
+            pdfContainer.style.margin = '0 auto';
+            pdfContainer.style.background = '#fff';
+            
+            // Add metadata if enabled
+            if (includeMetadata) {
+                const now = new Date();
+                const metadataDiv = document.createElement('div');
+                metadataDiv.className = 'pdf-metadata';
+                metadataDiv.innerHTML = `
+                    <h2>Document Export</h2>
+                    <p><strong>Generated:</strong> ${now.toLocaleDateString()} at ${now.toLocaleTimeString()}</p>
+                    <p><strong>Source:</strong> Markdown Editor Live</p>
+                `;
+                pdfContainer.appendChild(metadataDiv);
+            }
+            
+            // Parse markdown and add to container
+            const contentDiv = document.createElement('div');
+            contentDiv.innerHTML = marked.parse(markdownContent);
+            
+            // Apply syntax highlighting to code blocks
+            const codeBlocks = contentDiv.querySelectorAll('pre code');
+            codeBlocks.forEach(block => {
+                const language = block.className.replace('language-', '') || 'javascript';
+                block.innerHTML = highlightCode(block.textContent, language);
+            });
+            
+            pdfContainer.appendChild(contentDiv);
+            
+            // Temporarily append to body (hidden)
+            pdfContainer.style.position = 'absolute';
+            pdfContainer.style.left = '-9999px';
+            document.body.appendChild(pdfContainer);
+            
+            // PDF options
+            const opt = {
+                margin: [15, 15],
+                filename: `markdown-export-${new Date().toISOString().split('T')[0]}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { 
+                    scale: 2,
+                    useCORS: true,
+                    letterRendering: true
+                },
+                jsPDF: { 
+                    unit: 'mm', 
+                    format: 'a4', 
+                    orientation: 'portrait'
+                }
+            };
+            
+            // Generate PDF
+            html2pdf().set(opt).from(pdfContainer).save().then(() => {
+                // Clean up
+                document.body.removeChild(pdfContainer);
+            }).catch(err => {
+                console.error('PDF export error:', err);
+                alert('Error generating PDF. Please try again.');
+                document.body.removeChild(pdfContainer);
+            });
         }
         
         editor.addEventListener('input', updatePreview);
