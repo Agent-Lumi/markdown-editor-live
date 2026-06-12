@@ -22,9 +22,59 @@
             padding: 15px 20px;
             text-align: center;
             border-bottom: 1px solid #0f3460;
+            position: relative;
         }
         header h1 { font-size: 1.6em; margin-bottom: 3px; }
         header p { opacity: 0.7; font-size: 0.85em; }
+        .theme-toggle {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: 2px solid #e94560;
+            color: #e94560;
+            font-size: 1.2em;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .theme-toggle:hover {
+            background: #e94560;
+            color: white;
+        }
+        /* Light theme styles */
+        body.light-theme {
+            background: #f5f5f5;
+            color: #333;
+        }
+        body.light-theme header,
+        body.light-theme .toolbar,
+        body.light-theme footer {
+            background: #fff;
+            border-color: #ddd;
+            color: #333;
+        }
+        body.light-theme .input-pane {
+            background: #fff;
+            border-color: #ddd;
+        }
+        body.light-theme textarea {
+            color: #333;
+        }
+        body.light-theme .stats-bar {
+            background: #f0f0f0;
+            border-color: #ddd;
+            color: #666;
+        }
+        body.light-theme .theme-toggle {
+            border-color: #333;
+            color: #333;
+        }
+        body.light-theme .theme-toggle:hover {
+            background: #333;
+            color: #fff;
+        }
         .toolbar {
             background: #16213e;
             padding: 10px 20px;
@@ -244,6 +294,16 @@
             margin: 0 0 10px 0;
             font-size: 1.5em;
         }
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .container { animation: fadeIn 0.3s ease-out; }
+        button { transition: all 0.2s ease; }
+        button:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(233, 69, 96, 0.3); }
+        .theme-toggle { transition: all 0.3s ease; }
+        .pane { transition: background-color 0.3s ease; }
         .pdf-metadata p {
             margin: 5px 0;
             color: #666;
@@ -256,6 +316,7 @@
     <header>
         <h1>📝 Markdown Editor Live</h1>
         <p>Type on the left, see preview on the right • Auto-saves to browser</p>
+        <button id="themeToggle" class="theme-toggle" title="Toggle theme">🌙</button>
     </header>
     
     <div class="toolbar">
@@ -593,6 +654,45 @@ ${content}
                         e.preventDefault();
                         document.getElementById('importFile').click();
                         break;
+                }
+            }
+        });
+        
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const savedTheme = localStorage.getItem('editor-theme');
+        const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        // Apply saved theme or system preference
+        if (savedTheme === 'light' || (!savedTheme && !systemDark)) {
+            document.body.classList.add('light-theme');
+            themeToggle.textContent = '☀️';
+        } else {
+            themeToggle.textContent = '🌙';
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            const isLight = document.body.classList.contains('light-theme');
+            if (isLight) {
+                document.body.classList.remove('light-theme');
+                localStorage.setItem('editor-theme', 'dark');
+                themeToggle.textContent = '🌙';
+            } else {
+                document.body.classList.add('light-theme');
+                localStorage.setItem('editor-theme', 'light');
+                themeToggle.textContent = '☀️';
+            }
+        });
+        
+        // Listen for system theme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (!localStorage.getItem('editor-theme')) {
+                if (e.matches) {
+                    document.body.classList.remove('light-theme');
+                    themeToggle.textContent = '🌙';
+                } else {
+                    document.body.classList.add('light-theme');
+                    themeToggle.textContent = '☀️';
                 }
             }
         });

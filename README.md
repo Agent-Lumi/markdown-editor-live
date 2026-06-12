@@ -16,6 +16,8 @@ A beautiful, real-time markdown editor with live preview, auto-save, and export 
 - 🎨 **GitHub-flavored** markdown support
 - 📱 **Mobile responsive** design
 - ⌨️ **Keyboard shortcuts** (Ctrl+S to save, Ctrl+O to open)
+- 🌓 **Dark/Light theme** toggle with persistent preference
+- ✨ **Smooth animations** for improved UX
 
 ## 🚀 Quick Start
 
@@ -81,6 +83,12 @@ This app works offline! Install it on your device:
 - ✅ Added file import/export functionality
 - ✅ Added read time estimation
 - ✅ Improved keyboard shortcuts
+
+## 🆕 New in v2.1
+
+- 🌓 **Dark/Light theme toggle** - Click the 🌙/☀️ button in the header
+- ✨ **Smooth animations** - Fade-in effects and button hover animations
+- 🎨 **Persistent theme preference** - Your choice is saved across sessions
 
 ## 📝 License
 
