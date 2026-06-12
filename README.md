@@ -1,117 +1,89 @@
 # 📝 Markdown Editor Live
 
-A beautiful, real-time markdown editor with live preview. Type on the left, see your formatted document on the right instantly!
+A beautiful, real-time markdown editor with live preview, auto-save, and export capabilities.
+
+> **Live Demo:** https://agent-lumi.github.io/markdown-editor-live/
 
 ## ✨ Features
 
-- **⚡ Real-time Preview** - See your markdown render instantly as you type
-- **🎨 GitHub Flavored Markdown** - Full support for GFM syntax including tables, task lists, and more
-- **🧰 Convenient Toolbar** - Quick-insert buttons for common formatting
-- **💻 Syntax Highlighting** - Beautiful code blocks with highlighting
-- **📱 Mobile Friendly** - Responsive design works on all devices
-- **🌙 Dark Theme** - Easy on the eyes with a sleek dark interface
-- **⚡ Zero Dependencies** - Runs entirely in your browser
+- 🔄 **Live preview** as you type
+- 💾 **Auto-save** to browser storage
+- 📊 **Word count** & statistics (words, characters, lines, read time)
+- 📄 **Export to PDF** with syntax highlighting
+- 💾 **Export to Markdown** (.md file)
+- 🌐 **Export to HTML** (.html file)
+- 📁 **Import** .md, .txt, and .markdown files
+- 🎨 **GitHub-flavored** markdown support
+- 📱 **Mobile responsive** design
+- ⌨️ **Keyboard shortcuts** (Ctrl+S to save, Ctrl+O to open)
 
-## 🚀 Live Demo
+## 🚀 Quick Start
 
-**Try it now:** [https://agent-lumi.github.io/markdown-editor-live/](https://agent-lumi.github.io/markdown-editor-live/)
+1. Open the editor
+2. Start typing markdown on the left
+3. See the live preview on the right
+4. Your work auto-saves every 3 seconds!
 
-## 📖 How to Use
-
-1. **Open the editor** - Visit the live demo link above
-2. **Start typing** - Enter your markdown in the left panel
-3. **See preview** - Your formatted document appears instantly on the right
-4. **Use the toolbar** - Click buttons to quickly insert common markdown elements
-5. **Copy your work** - Select all and copy from either pane
-
-### Toolbar Shortcuts
+## 🛠️ Toolbar Actions
 
 | Button | Action |
 |--------|--------|
-| **H1** | Insert `# Heading` |
-| **H2** | Insert `## Heading` |
-| **Bold** | Insert `**bold**` |
-| **Italic** | Insert `*italic*` |
-| **Link** | Insert `[link](url)` |
-| **Code** | Insert code block |
-| **List** | Insert `- item` |
-| **Clear** | Clear all content |
-| **Example** | Load example markdown |
+| H1/H2 | Insert heading |
+| Bold | Insert bold text |
+| Italic | Insert italic text |
+| Link | Insert link |
+| Code | Insert code block |
+| List | Insert list item |
+| Quote | Insert blockquote |
+| Clear | Clear all content |
+| Example | Load example markdown |
+| 📁 Import | Import .md file |
+| 💾 Save .md | Export as Markdown |
+| 🌐 Save HTML | Export as HTML |
+| 📄 Export PDF | Export as PDF |
+
+## 📊 Statistics
+
+The stats bar shows:
+- **Words** - Total word count
+- **Characters** - Total character count
+- **Lines** - Total line count
+- **Read time** - Estimated reading time
 
 ## ⌨️ Keyboard Shortcuts
 
 | Shortcut | Action |
 |----------|--------|
-| `Ctrl + A` | Select all text |
-| `Ctrl + C` | Copy selected text |
-| `Ctrl + V` | Paste text |
-| `Ctrl + Z` | Undo |
-| `Ctrl + Y` | Redo |
-| `Tab` | Insert tab/spaces |
+| Ctrl+S | Export Markdown |
+| Ctrl+O | Import file |
 
-## 🛠️ Supported Markdown
+## 🎨 Code Highlighting
 
-- **Headers** - `# H1` through `###### H6`
-- **Emphasis** - `*italic*`, `**bold**`, `~~strikethrough~~`
-- **Lists** - Ordered and unordered lists
-- **Links** - `[text](url)`
-- **Images** - `![alt](url)`
-- **Code** - Inline `` `code` `` and fenced blocks
-- **Tables** - GitHub-style tables
-- **Blockquotes** - `> quote`
-- **Horizontal Rules** - `---`
+Syntax highlighting supported for:
+- Keywords (function, const, let, etc.)
+- Strings
+- Functions
+- Comments
+- Numbers
 
-## 🏃 Running Locally
+## 📱 PWA Support
 
-Simply open `index.html` in your browser:
+This app works offline! Install it on your device:
+- **Chrome:** Click "Add to Home Screen" in menu
+- **Safari:** Tap Share → "Add to Home Screen"
 
-```bash
-git clone https://github.com/Agent-Lumi/markdown-editor-live.git
-cd markdown-editor-live
-open index.html  # or double-click the file
-```
+## 🐛 Fixed Issues (v2.0)
 
-No build step or server required!
+- ✅ Fixed duplicate manifest/service worker tags
+- ✅ Fixed broken auto-save functionality
+- ✅ Removed duplicate script blocks
+- ✅ Added proper word count statistics
+- ✅ Added file import/export functionality
+- ✅ Added read time estimation
+- ✅ Improved keyboard shortcuts
 
-## 📝 Example
+## 📝 License
 
-```markdown
-# My Document
+MIT © [Agent-Lumi](https://github.com/Agent-Lumi)
 
-## Introduction
-
-This is **bold** and this is *italic*.
-
-### Code Example
-
-```javascript
-function hello() {
-    console.log("Hello, World!");
-}
-```
-
-### Table
-
-| Feature | Status |
-|---------|--------|
-| Live Preview | ✅ |
-| Mobile Support | ✅ |
-
----
-
-*Happy writing!* 🎉
-```
-
-## 👤 Author
-
-Made with 💡 by **Lumi** for [@shalkith](https://github.com/shalkith)
-
-- GitHub: [@Agent-Lumi](https://github.com/Agent-Lumi)
-
-## 📄 License
-
-MIT License - feel free to use and modify!
-
----
-
-<p align="center">✨ Happy Markdown Editing! ✨</p>
+Made with 💡 by Lumi for @shalkith
