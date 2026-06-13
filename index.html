@@ -26,10 +26,14 @@
         }
         header h1 { font-size: 1.6em; margin-bottom: 3px; }
         header p { opacity: 0.7; font-size: 0.85em; }
-        .theme-toggle {
+        .header-buttons {
             position: absolute;
             top: 15px;
             right: 20px;
+            display: flex;
+            gap: 8px;
+        }
+        .theme-toggle, .shortcuts-btn {
             background: none;
             border: 2px solid #e94560;
             color: #e94560;
@@ -39,7 +43,7 @@
             border-radius: 8px;
             transition: all 0.3s ease;
         }
-        .theme-toggle:hover {
+        .theme-toggle:hover, .shortcuts-btn:hover {
             background: #e94560;
             color: white;
         }
@@ -67,13 +71,19 @@
             border-color: #ddd;
             color: #666;
         }
-        body.light-theme .theme-toggle {
+        body.light-theme .theme-toggle,
+        body.light-theme .shortcuts-btn {
             border-color: #333;
             color: #333;
         }
-        body.light-theme .theme-toggle:hover {
+        body.light-theme .theme-toggle:hover,
+        body.light-theme .shortcuts-btn:hover {
             background: #333;
             color: #fff;
+        }
+        body.light-theme .modal-content {
+            background: #fff;
+            color: #333;
         }
         .toolbar {
             background: #16213e;
@@ -97,6 +107,11 @@
         .toolbar button:hover { background: #e94560; transform: translateY(-1px); }
         .toolbar button.pdf-btn { background: #e94560; }
         .toolbar button.pdf-btn:hover { background: #ff6b6b; }
+        .toolbar button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
         .toolbar .separator {
             width: 1px;
             height: 20px;
@@ -118,8 +133,38 @@
             border-bottom: 1px solid #0f3460;
             display: flex;
             gap: 20px;
+            flex-wrap: wrap;
+            align-items: center;
         }
         .stats-bar span { color: #e94560; font-weight: 600; }
+        .undo-redo-group {
+            display: flex;
+            gap: 5px;
+            margin-left: auto;
+        }
+        .undo-redo-group button {
+            background: #16213e;
+            border: 1px solid #0f3460;
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.2s;
+        }
+        .undo-redo-group button:hover:not(:disabled) {
+            background: #e94560;
+            border-color: #e94560;
+        }
+        .undo-redo-group button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        body.light-theme .undo-redo-group button {
+            background: #f0f0f0;
+            border-color: #ddd;
+            color: #333;
+        }
         .editor-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -221,6 +266,7 @@
             .input-pane { border-right: none; border-bottom: 1px solid #0f3460; }
             .toolbar { justify-content: center; }
             .stats-bar { flex-wrap: wrap; gap: 10px; }
+            .header-buttons { position: relative; top: auto; right: auto; justify-content: center; margin-top: 10px; }
         }
         .pdf-content {
             font-family: 'Inter', sans-serif;
@@ -294,6 +340,87 @@
             margin: 0 0 10px 0;
             font-size: 1.5em;
         }
+        /* Modal for shortcuts */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+        }
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: #16213e;
+            padding: 25px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid #0f3460;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #0f3460;
+        }
+        .modal-header h2 {
+            margin: 0;
+            color: #e94560;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 1.5em;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+        .modal-close:hover {
+            background: #0f3460;
+            color: #fff;
+        }
+        .shortcut-list {
+            list-style: none;
+            padding: 0;
+        }
+        .shortcut-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #0f3460;
+        }
+        .shortcut-list li:last-child {
+            border-bottom: none;
+        }
+        .shortcut-key {
+            background: #0f3460;
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85em;
+        }
+        .shortcut-desc {
+            color: #888;
+        }
         /* Animations */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -301,8 +428,8 @@
         }
         .container { animation: fadeIn 0.3s ease-out; }
         button { transition: all 0.2s ease; }
-        button:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(233, 69, 96, 0.3); }
-        .theme-toggle { transition: all 0.3s ease; }
+        button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(233, 69, 96, 0.3); }
+        .theme-toggle, .shortcuts-btn { transition: all 0.3s ease; }
         .pane { transition: background-color 0.3s ease; }
         .pdf-metadata p {
             margin: 5px 0;
@@ -316,7 +443,10 @@
     <header>
         <h1>📝 Markdown Editor Live</h1>
         <p>Type on the left, see preview on the right • Auto-saves to browser</p>
-        <button id="themeToggle" class="theme-toggle" title="Toggle theme">🌙</button>
+        <div class="header-buttons">
+            <button class="shortcuts-btn" id="shortcutsBtn" title="Keyboard shortcuts">⌨️</button>
+            <button class="theme-toggle" id="themeToggle" title="Toggle theme">🌙</button>
+        </div>
     </header>
     
     <div class="toolbar">
@@ -325,7 +455,7 @@
         <button onclick="insertText('**bold**')">Bold</button>
         <button onclick="insertText('*italic*')">Italic</button>
         <button onclick="insertText('[link](url)')">Link</button>
-        <button onclick="insertText('```\ncode\n```')">Code</button>
+        <button onclick="insertText('\`\`\`\ncode\n\`\`\`')">Code</button>
         <button onclick="insertText('- item')">List</button>
         <button onclick="insertText('> quote')">Quote</button>
         <button onclick="clearEditor()">Clear</button>
@@ -347,6 +477,10 @@
         <div>📊 Characters: <span id="charCount">0</span></div>
         <div>📄 Lines: <span id="lineCount">0</span></div>
         <div>⏱️ Read time: <span id="readTime">0 min</span></div>
+        <div class="undo-redo-group">
+            <button id="undoBtn" onclick="undo()" disabled title="Undo (Ctrl+Z)">↩️ Undo</button>
+            <button id="redoBtn" onclick="redo()" disabled title="Redo (Ctrl+Y)">↪️ Redo</button>
+        </div>
     </div>
     
     <div class="editor-container">
@@ -363,17 +497,91 @@
 
     <div class="save-indicator" id="saveIndicator">💾 Saved!</div>
     <input type="file" id="importFile" accept=".md,.txt,.markdown" onchange="importFile(event)">
+
+    <!-- Keyboard Shortcuts Modal -->
+    <div id="shortcutsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>⌨️ Keyboard Shortcuts</h2>
+                <button class="modal-close" onclick="closeShortcuts()">&times;</button>
+            </div>
+            <ul class="shortcut-list">
+                <li><span class="shortcut-desc">Save Markdown</span><span class="shortcut-key">Ctrl + S</span></li>
+                <li><span class="shortcut-desc">Open File</span><span class="shortcut-key">Ctrl + O</span></li>
+                <li><span class="shortcut-desc">Undo</span><span class="shortcut-key">Ctrl + Z</span></li>
+                <li><span class="shortcut-desc">Redo</span><span class="shortcut-key">Ctrl + Y</span></li>
+                <li><span class="shortcut-desc">Bold</span><span class="shortcut-key">Ctrl + B</span></li>
+                <li><span class="shortcut-desc">Italic</span><span class="shortcut-key">Ctrl + I</span></li>
+                <li><span class="shortcut-desc">Insert Link</span><span class="shortcut-key">Ctrl + K</span></li>
+                <li><span class="shortcut-desc">Export PDF</span><span class="shortcut-key">Ctrl + P</span></li>
+                <li><span class="shortcut-desc">Clear Editor</span><span class="shortcut-key">Ctrl + Shift + C</span></li>
+                <li><span class="shortcut-desc">Toggle Preview</span><span class="shortcut-key">Ctrl + /</span></li>
+            </ul>
+        </div>
+    </div>
     
     <script>
         const editor = document.getElementById('editor');
         const preview = document.getElementById('preview');
         const STORAGE_KEY = 'markdown-editor-content';
         
+        // Undo/Redo history
+        const history = {
+            states: [],
+            currentIndex: -1,
+            maxStates: 50
+        };
+        
+        function saveHistoryState() {
+            // Remove any future states if we're in the middle
+            if (history.currentIndex < history.states.length - 1) {
+                history.states = history.states.slice(0, history.currentIndex + 1);
+            }
+            
+            // Add new state
+            history.states.push(editor.value);
+            
+            // Limit history size
+            if (history.states.length > history.maxStates) {
+                history.states.shift();
+            } else {
+                history.currentIndex++;
+            }
+            
+            updateUndoRedoButtons();
+        }
+        
+        function undo() {
+            if (history.currentIndex > 0) {
+                history.currentIndex--;
+                editor.value = history.states[history.currentIndex];
+                updatePreview();
+                updateStats();
+                updateUndoRedoButtons();
+            }
+        }
+        
+        function redo() {
+            if (history.currentIndex < history.states.length - 1) {
+                history.currentIndex++;
+                editor.value = history.states[history.currentIndex];
+                updatePreview();
+                updateStats();
+                updateUndoRedoButtons();
+            }
+        }
+        
+        function updateUndoRedoButtons() {
+            document.getElementById('undoBtn').disabled = history.currentIndex <= 0;
+            document.getElementById('redoBtn').disabled = history.currentIndex >= history.states.length - 1;
+        }
+        
         // Load saved content on startup
         function loadSavedContent() {
             const saved = localStorage.getItem(STORAGE_KEY);
             if (saved) {
                 editor.value = saved;
+                saveHistoryState();
                 updatePreview();
                 updateStats();
                 updateLastSaved();
@@ -427,6 +635,7 @@
             editor.value = value.substring(0, start) + text + value.substring(end);
             editor.focus();
             editor.selectionStart = editor.selectionEnd = start + text.length;
+            saveHistoryState();
             updatePreview();
             updateStats();
             saveToStorage();
@@ -435,6 +644,7 @@
         function clearEditor() {
             if (confirm('Clear all content? This will remove unsaved changes.')) {
                 editor.value = '';
+                saveHistoryState();
                 updatePreview();
                 updateStats();
                 saveToStorage();
@@ -456,6 +666,8 @@ This is a **live markdown editor** with real-time preview.
 - ✅ **Auto-save to browser** 💾
 - ✅ **Export to PDF, Markdown, HTML** 📄
 - ✅ **Import .md files** 📁
+- ✅ **Undo/Redo functionality** ↩️↪️
+- ✅ **Keyboard shortcuts** ⌨️
 
 ## Code Example
 
@@ -476,6 +688,7 @@ console.log(greet('World'));
 | Statistics | ✅ |
 | PDF Export | ✅ |
 | File Import | ✅ |
+| Undo/Redo | ✅ |
 
 ## Blockquote
 
@@ -485,6 +698,7 @@ console.log(greet('World'));
 ---
 
 *Happy writing!* 📝`;
+            saveHistoryState();
             updatePreview();
             updateStats();
             saveToStorage();
@@ -513,6 +727,7 @@ console.log(greet('World'));
             const reader = new FileReader();
             reader.onload = (e) => {
                 editor.value = e.target.result;
+                saveHistoryState();
                 updatePreview();
                 updateStats();
                 saveToStorage();
@@ -629,10 +844,26 @@ ${content}
             });
         }
         
+        // Keyboard shortcuts modal
+        function openShortcuts() {
+            document.getElementById('shortcutsModal').classList.add('show');
+        }
+        
+        function closeShortcuts() {
+            document.getElementById('shortcutsModal').classList.remove('show');
+        }
+        
         // Event listeners
         editor.addEventListener('input', () => {
             updatePreview();
             updateStats();
+        });
+        
+        // Save history on significant changes
+        let historyTimeout;
+        editor.addEventListener('input', () => {
+            clearTimeout(historyTimeout);
+            historyTimeout = setTimeout(saveHistoryState, 500);
         });
         
         // Auto-save every 3 seconds
@@ -645,7 +876,7 @@ ${content}
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             if ((e.ctrlKey || e.metaKey)) {
-                switch(e.key) {
+                switch(e.key.toLowerCase()) {
                     case 's':
                         e.preventDefault();
                         exportMarkdown();
@@ -654,7 +885,59 @@ ${content}
                         e.preventDefault();
                         document.getElementById('importFile').click();
                         break;
+                    case 'z':
+                        e.preventDefault();
+                        if (e.shiftKey) {
+                            redo();
+                        } else {
+                            undo();
+                        }
+                        break;
+                    case 'y':
+                        e.preventDefault();
+                        redo();
+                        break;
+                    case 'b':
+                        e.preventDefault();
+                        insertText('**bold**');
+                        break;
+                    case 'i':
+                        e.preventDefault();
+                        insertText('*italic*');
+                        break;
+                    case 'k':
+                        e.preventDefault();
+                        insertText('[link](url)');
+                        break;
+                    case 'p':
+                        e.preventDefault();
+                        exportToPDF();
+                        break;
+                    case 'c':
+                        if (e.shiftKey) {
+                            e.preventDefault();
+                            clearEditor();
+                        }
+                        break;
+                    case '/':
+                        e.preventDefault();
+                        // Toggle preview visibility
+                        const previewPane = document.getElementById('preview').parentElement;
+                        const editorContainer = document.querySelector('.editor-container');
+                        if (previewPane.style.display === 'none') {
+                            previewPane.style.display = '';
+                            editorContainer.style.gridTemplateColumns = '1fr 1fr';
+                        } else {
+                            previewPane.style.display = 'none';
+                            editorContainer.style.gridTemplateColumns = '1fr';
+                        }
+                        break;
                 }
+            }
+            
+            // Close modal on escape
+            if (e.key === 'Escape') {
+                closeShortcuts();
             }
         });
         
@@ -697,36 +980,22 @@ ${content}
             }
         });
         
+        // Shortcuts modal
+        document.getElementById('shortcutsBtn').addEventListener('click', openShortcuts);
+        
+        // Close modal on click outside
+        document.getElementById('shortcutsModal').addEventListener('click', (e) => {
+            if (e.target.id === 'shortcutsModal') {
+                closeShortcuts();
+            }
+        });
+        
         // Initial load
         loadSavedContent();
+        // Initialize history with initial state if empty
+        if (history.states.length === 0 && editor.value) {
+            saveHistoryState();
+        }
     </script>
 </body>
-</html><script>
-// Import from file
-const importBtn = document.createElement('button');
-importBtn.textContent = '📁 Import';
-importBtn.onclick = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.onchange = (e) => {
-        const file = e.target.files[0];
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const textArea = document.querySelector('textarea');
-            if (textArea) textArea.value = e.target.result;
-        };
-        reader.readAsText(file);
-    };
-    input.click();
-};
-document.querySelector('.container')?.appendChild(importBtn);
-</script>
-<script>
-// API integration ready
-const API = {
-    async fetch(url, options = {}) {
-        const response = await fetch(url, options);
-        return response.json();
-    }
-};
-</script>
+</html>

@@ -15,9 +15,11 @@ A beautiful, real-time markdown editor with live preview, auto-save, and export 
 - 📁 **Import** .md, .txt, and .markdown files
 - 🎨 **GitHub-flavored** markdown support
 - 📱 **Mobile responsive** design
-- ⌨️ **Keyboard shortcuts** (Ctrl+S to save, Ctrl+O to open)
+- ⌨️ **Keyboard shortcuts** - Full support for common actions
 - 🌓 **Dark/Light theme** toggle with persistent preference
 - ✨ **Smooth animations** for improved UX
+- ↩️ **Undo/Redo** functionality with history (up to 50 states)
+- ⌨️ **Keyboard shortcuts help** - Click ⌨️ button to see all shortcuts
 
 ## 🚀 Quick Start
 
@@ -58,6 +60,15 @@ The stats bar shows:
 |----------|--------|
 | Ctrl+S | Export Markdown |
 | Ctrl+O | Import file |
+| Ctrl+Z | Undo |
+| Ctrl+Y | Redo |
+| Ctrl+B | Insert bold |
+| Ctrl+I | Insert italic |
+| Ctrl+K | Insert link |
+| Ctrl+P | Export PDF |
+| Ctrl+Shift+C | Clear editor |
+| Ctrl+/ | Toggle preview pane |
+| Escape | Close shortcuts modal |
 
 ## 🎨 Code Highlighting
 
@@ -67,6 +78,14 @@ Syntax highlighting supported for:
 - Functions
 - Comments
 - Numbers
+
+## ↩️ Undo/Redo
+
+The editor now supports full undo/redo functionality:
+- Click ↩️ Undo / ↪️ Redo buttons in the stats bar
+- Use Ctrl+Z / Ctrl+Y keyboard shortcuts
+- Keeps up to 50 history states
+- Automatically saves history on content changes
 
 ## 📱 PWA Support
 
@@ -89,6 +108,15 @@ This app works offline! Install it on your device:
 - 🌓 **Dark/Light theme toggle** - Click the 🌙/☀️ button in the header
 - ✨ **Smooth animations** - Fade-in effects and button hover animations
 - 🎨 **Persistent theme preference** - Your choice is saved across sessions
+
+## 🆕 New in v2.2
+
+- ↩️ **Undo/Redo functionality** - Full history management with 50-state buffer
+- ⌨️ **Keyboard shortcuts modal** - Click the ⌨️ button to see all available shortcuts
+- 🎹 **Extended shortcuts** - Ctrl+B (bold), Ctrl+I (italic), Ctrl+K (link), Ctrl+P (PDF)
+- 🧹 **Code cleanup** - Removed unused backup files
+- 🔄 **History auto-save** - Tracks changes every 500ms for precise undo/redo
+- 🎯 **Toggle preview** - Ctrl+/ to show/hide preview pane
 
 ## 📝 License
 
