@@ -396,6 +396,141 @@
             background: #0f3460;
             color: #fff;
         }
+        /* Stats modal specific styles */
+        .stats-modal-content {
+            max-width: 600px;
+        }
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .stat-card {
+            background: #0f3460;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-3px);
+        }
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: 600;
+            color: #e94560;
+        }
+        .stat-label {
+            font-size: 0.8em;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+        .chart-container {
+            background: #0f0f1a;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .chart-container h3 {
+            margin: 0 0 15px 0;
+            color: #e94560;
+            font-size: 1em;
+        }
+        .chart-bars {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            height: 150px;
+            gap: 8px;
+            padding-bottom: 25px;
+            position: relative;
+        }
+        .chart-bar {
+            flex: 1;
+            background: linear-gradient(to top, #e94560, #ff6b6b);
+            border-radius: 4px 4px 0 0;
+            min-height: 5px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .chart-bar:hover {
+            filter: brightness(1.2);
+        }
+        .chart-bar::after {
+            content: attr(data-value);
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7em;
+            white-space: nowrap;
+            opacity: 0.7;
+        }
+        .chart-bar::before {
+            content: attr(data-label);
+            position: absolute;
+            bottom: -35px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-45deg);
+            font-size: 0.65em;
+            white-space: nowrap;
+            opacity: 0.5;
+            transform-origin: left center;
+        }
+        .stats-actions {
+            text-align: center;
+        }
+        .reset-stats-btn {
+            background: #16213e;
+            border: 1px solid #e94560;
+            color: #e94560;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.2s;
+        }
+        .reset-stats-btn:hover {
+            background: #e94560;
+            color: #fff;
+        }
+        body.light-theme .stats-modal-content .stat-card {
+            background: #f0f0f0;
+        }
+        body.light-theme .chart-container {
+            background: #f9f9f9;
+        }
+        @media (max-width: 768px) {
+            .stats-overview {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .stats-modal-content {
+                width: 95%;
+            }
+        }
+        .stats-btn {
+            background: none;
+            border: 2px solid #e94560;
+            color: #e94560;
+            font-size: 1.2em;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .stats-btn:hover {
+            background: #e94560;
+            color: white;
+        }
+        body.light-theme .stats-btn {
+            border-color: #333;
+            color: #333;
+        }
+        body.light-theme .stats-btn:hover {
+            background: #333;
+            color: #fff;
+        }
         .shortcut-list {
             list-style: none;
             padding: 0;
@@ -444,6 +579,7 @@
         <h1>📝 Markdown Editor Live</h1>
         <p>Type on the left, see preview on the right • Auto-saves to browser</p>
         <div class="header-buttons">
+            <button class="stats-btn" id="statsBtn" title="Writing statistics">📊</button>
             <button class="shortcuts-btn" id="shortcutsBtn" title="Keyboard shortcuts">⌨️</button>
             <button class="theme-toggle" id="themeToggle" title="Toggle theme">🌙</button>
         </div>
@@ -455,7 +591,7 @@
         <button onclick="insertText('**bold**')">Bold</button>
         <button onclick="insertText('*italic*')">Italic</button>
         <button onclick="insertText('[link](url)')">Link</button>
-        <button onclick="insertText('\`\`\`\ncode\n\`\`\`')">Code</button>
+        <button onclick="insertText('```\ncode\n```')">Code</button>
         <button onclick="insertText('- item')">List</button>
         <button onclick="insertText('> quote')">Quote</button>
         <button onclick="clearEditor()">Clear</button>
@@ -498,6 +634,41 @@
     <div class="save-indicator" id="saveIndicator">💾 Saved!</div>
     <input type="file" id="importFile" accept=".md,.txt,.markdown" onchange="importFile(event)">
 
+    <!-- Writing Stats Modal -->
+    <div id="statsModal" class="modal">
+        <div class="modal-content stats-modal-content">
+            <div class="modal-header">
+                <h2>📊 Writing Statistics</h2>
+                <button class="modal-close" onclick="closeStats()">&times;</button>
+            </div>
+            <div class="stats-overview">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalWordsAllTime">0</div>
+                    <div class="stat-label">Total Words</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalSessions">0</div>
+                    <div class="stat-label">Sessions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="avgSession">0</div>
+                    <div class="stat-label">Avg Words/Session</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="longestSession">0</div>
+                    <div class="stat-label">Longest Session</div>
+                </div>
+            </div>
+            <div class="chart-container">
+                <h3>📈 Daily Word Count</h3>
+                <div class="chart-bars" id="dailyChart"></div>
+            </div>
+            <div class="stats-actions">
+                <button onclick="resetStats()" class="reset-stats-btn">🗑️ Reset Statistics</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Keyboard Shortcuts Modal -->
     <div id="shortcutsModal" class="modal">
         <div class="modal-content">
@@ -507,6 +678,7 @@
             </div>
             <ul class="shortcut-list">
                 <li><span class="shortcut-desc">Save Markdown</span><span class="shortcut-key">Ctrl + S</span></li>
+                <li><span class="shortcut-desc">View Statistics</span><span class="shortcut-key">Ctrl + Shift + S</span></li>
                 <li><span class="shortcut-desc">Open File</span><span class="shortcut-key">Ctrl + O</span></li>
                 <li><span class="shortcut-desc">Undo</span><span class="shortcut-key">Ctrl + Z</span></li>
                 <li><span class="shortcut-desc">Redo</span><span class="shortcut-key">Ctrl + Y</span></li>
@@ -668,6 +840,7 @@ This is a **live markdown editor** with real-time preview.
 - ✅ **Import .md files** 📁
 - ✅ **Undo/Redo functionality** ↩️↪️
 - ✅ **Keyboard shortcuts** ⌨️
+- ✅ **Writing statistics tracking** 📈
 
 ## Code Example
 
@@ -689,6 +862,7 @@ console.log(greet('World'));
 | PDF Export | ✅ |
 | File Import | ✅ |
 | Undo/Redo | ✅ |
+| Writing Stats | ✅ |
 
 ## Blockquote
 
@@ -853,6 +1027,128 @@ ${content}
             document.getElementById('shortcutsModal').classList.remove('show');
         }
         
+        // Writing statistics
+        const STATS_KEY = 'markdown-editor-stats';
+        
+        function loadStats() {
+            const saved = localStorage.getItem(STATS_KEY);
+            return saved ? JSON.parse(saved) : { sessions: [], dailyWords: {} };
+        }
+        
+        function saveStats(stats) {
+            localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+        }
+        
+        function recordSessionStats(wordCount) {
+            if (wordCount < 1) return;
+            
+            const stats = loadStats();
+            const today = new Date().toISOString().split('T')[0];
+            
+            // Record session
+            stats.sessions.push({
+                date: new Date().toISOString(),
+                words: wordCount
+            });
+            
+            // Keep only last 100 sessions
+            if (stats.sessions.length > 100) {
+                stats.sessions = stats.sessions.slice(-100);
+            }
+            
+            // Update daily words
+            if (!stats.dailyWords[today]) {
+                stats.dailyWords[today] = 0;
+            }
+            stats.dailyWords[today] += wordCount;
+            
+            saveStats(stats);
+        }
+        
+        let lastRecordedCount = 0;
+        let statsTimeout;
+        
+        function debouncedRecordStats() {
+            clearTimeout(statsTimeout);
+            statsTimeout = setTimeout(() => {
+                const currentWords = editor.value.trim() ? editor.value.trim().split(/\s+/).length : 0;
+                if (currentWords > lastRecordedCount) {
+                    recordSessionStats(currentWords - lastRecordedCount);
+                }
+                lastRecordedCount = currentWords;
+            }, 10000); // Record after 10 seconds of inactivity
+        }
+        
+        function openStats() {
+            const stats = loadStats();
+            
+            // Calculate statistics
+            const totalWords = stats.sessions.reduce((sum, s) => sum + s.words, 0);
+            const totalSessions = stats.sessions.length;
+            const avgSession = totalSessions > 0 ? Math.round(totalWords / totalSessions) : 0;
+            const longestSession = stats.sessions.length > 0 ? Math.max(...stats.sessions.map(s => s.words)) : 0;
+            
+            // Update display
+            document.getElementById('totalWordsAllTime').textContent = totalWords.toLocaleString();
+            document.getElementById('totalSessions').textContent = totalSessions.toLocaleString();
+            document.getElementById('avgSession').textContent = avgSession.toLocaleString();
+            document.getElementById('longestSession').textContent = longestSession.toLocaleString();
+            
+            // Build chart
+            buildDailyChart(stats.dailyWords);
+            
+            document.getElementById('statsModal').classList.add('show');
+        }
+        
+        function closeStats() {
+            document.getElementById('statsModal').classList.remove('show');
+        }
+        
+        function buildDailyChart(dailyWords) {
+            const chartContainer = document.getElementById('dailyChart');
+            chartContainer.innerHTML = '';
+            
+            // Get last 7 days
+            const days = [];
+            const today = new Date();
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date(today);
+                d.setDate(d.getDate() - i);
+                days.push(d.toISOString().split('T')[0]);
+            }
+            
+            const values = days.map(day => dailyWords[day] || 0);
+            const maxValue = Math.max(...values, 1);
+            
+            const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            
+            days.forEach((day, index) => {
+                const value = values[index];
+                const bar = document.createElement('div');
+                bar.className = 'chart-bar';
+                bar.style.height = `${(value / maxValue) * 100}%`;
+                bar.setAttribute('data-value', value.toLocaleString());
+                
+                const dateObj = new Date(day);
+                const dayName = dayNames[dateObj.getDay()];
+                const isToday = index === 6;
+                bar.setAttribute('data-label', isToday ? 'Today' : dayName);
+                
+                if (value === 0) {
+                    bar.style.opacity = '0.3';
+                }
+                
+                chartContainer.appendChild(bar);
+            });
+        }
+        
+        function resetStats() {
+            if (confirm('Reset all writing statistics? This cannot be undone.')) {
+                localStorage.removeItem(STATS_KEY);
+                openStats(); // Refresh display
+            }
+        }
+        
         // Event listeners
         editor.addEventListener('input', () => {
             updatePreview();
@@ -878,8 +1174,13 @@ ${content}
             if ((e.ctrlKey || e.metaKey)) {
                 switch(e.key.toLowerCase()) {
                     case 's':
-                        e.preventDefault();
-                        exportMarkdown();
+                        if (e.shiftKey) {
+                            e.preventDefault();
+                            openStats();
+                        } else {
+                            e.preventDefault();
+                            exportMarkdown();
+                        }
                         break;
                     case 'o':
                         e.preventDefault();
@@ -935,9 +1236,10 @@ ${content}
                 }
             }
             
-            // Close modal on escape
+            // Close modals on escape
             if (e.key === 'Escape') {
                 closeShortcuts();
+                closeStats();
             }
         });
         
@@ -982,6 +1284,7 @@ ${content}
         
         // Shortcuts modal
         document.getElementById('shortcutsBtn').addEventListener('click', openShortcuts);
+        document.getElementById('statsBtn').addEventListener('click', openStats);
         
         // Close modal on click outside
         document.getElementById('shortcutsModal').addEventListener('click', (e) => {
@@ -989,6 +1292,15 @@ ${content}
                 closeShortcuts();
             }
         });
+        
+        document.getElementById('statsModal').addEventListener('click', (e) => {
+            if (e.target.id === 'statsModal') {
+                closeStats();
+            }
+        });
+        
+        // Add stats recording to editor input
+        editor.addEventListener('input', debouncedRecordStats);
         
         // Initial load
         loadSavedContent();
