@@ -58,6 +58,7 @@ The stats bar shows:
 
 | Shortcut | Action |
 |----------|--------|
+| Ctrl+Shift+S | View Writing Statistics |
 | Ctrl+S | Export Markdown |
 | Ctrl+O | Import file |
 | Ctrl+Z | Undo |
@@ -68,7 +69,7 @@ The stats bar shows:
 | Ctrl+P | Export PDF |
 | Ctrl+Shift+C | Clear editor |
 | Ctrl+/ | Toggle preview pane |
-| Escape | Close shortcuts modal |
+| Escape | Close modals |
 
 ## 🎨 Code Highlighting
 
@@ -79,13 +80,32 @@ Syntax highlighting supported for:
 - Comments
 - Numbers
 
-## ↩️ Undo/Redo
+## 📊 Writing Statistics
 
-The editor now supports full undo/redo functionality:
-- Click ↩️ Undo / ↪️ Redo buttons in the stats bar
-- Use Ctrl+Z / Ctrl+Y keyboard shortcuts
-- Keeps up to 50 history states
-- Automatically saves history on content changes
+Track your writing progress over time!
+
+Click the 📊 button in the header or press **Ctrl+Shift+S** to view:
+
+### Session Tracking
+- **Total Words** - Cumulative words written across all sessions
+- **Sessions** - Total number of writing sessions
+- **Avg Words/Session** - Average words per session
+- **Longest Session** - Your most productive session
+
+### Daily Word Count Chart
+- Visual bar chart showing the last 7 days of writing activity
+- Each bar represents words written that day
+- Hover to see exact word counts
+
+### How It Works
+- Tracks actual writing (counts words you type, not just open the editor)
+- Records after 10 seconds of inactivity (prevents counting pasted content)
+- Stores up to 100 sessions in browser storage
+- Works across all your devices with the same browser sync
+
+### Reset Statistics
+- Click "Reset Statistics" to clear all data
+- Confirmation required before deletion
 
 ## 📱 PWA Support
 
@@ -108,6 +128,17 @@ This app works offline! Install it on your device:
 - 🌓 **Dark/Light theme toggle** - Click the 🌙/☀️ button in the header
 - ✨ **Smooth animations** - Fade-in effects and button hover animations
 - 🎨 **Persistent theme preference** - Your choice is saved across sessions
+
+## 🆕 New in v2.3
+
+- 📊 **Writing Statistics** - Track your writing progress with session tracking and visual charts
+- 📈 **Daily Word Count Chart** - 7-day bar chart showing your writing activity
+- 📊 **Stats Button** - New 📊 button in the header for quick access
+- 🎹 **Statistics Shortcut** - Ctrl+Shift+S to open statistics modal
+- 💾 **Session Storage** - Tracks words written across sessions with localStorage
+- 🔄 **Smart Tracking** - Records only actual writing (10s debounce)
+- 🗑️ **Reset Functionality** - Clear statistics with confirmation
+- 🎨 **Theme Support** - Stats modal works in both dark and light themes
 
 ## 🆕 New in v2.2
 
